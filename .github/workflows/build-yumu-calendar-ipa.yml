@@ -20,7 +20,7 @@ jobs:
           xcodebuild -version
       - name: Build app (unsigned)
         run: |
-          xcodebuild build -workspace Clendar.xcworkspace -scheme Clendar -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+          xcodebuild build -skipPackagePluginValidation -workspace Clendar.xcworkspace -scheme Clendar -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
       - name: Package IPA
         run: |
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "Clendar.app" | head -1)
