@@ -1,0 +1,37 @@
+name: Build YuMu Calendar IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-yumu-calendar-ipa.yml'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select latest Xcode
+        run: |
+          latest=$(ls /Applications | grep -E '^Xcode_[0-9]' | sort -V | tail -1)
+          echo "Selecting $latest"
+          sudo xcode-select -s "/Applications/$latest/Contents/Developer"
+          xcodebuild -version
+      - name: Build app (unsigned)
+        run: |
+          xcodebuild build -workspace Clendar.xcworkspace -scheme Clendar -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+      - name: Package IPA
+        run: |
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "Clendar.app" | head -1)
+          echo "Packaging $APP"
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -r YuMuCalendar-unsigned.ipa Payload
+          ls -la YuMuCalendar-unsigned.ipa
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YuMuCalendar-unsigned-ipa
+          path: YuMuCalendar-unsigned.ipa
+          retention-days: 90
