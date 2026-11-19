@@ -18,6 +18,8 @@ jobs:
           echo "Selecting $latest"
           sudo xcode-select -s "/Applications/$latest/Contents/Developer"
           xcodebuild -version
+      - name: Install CocoaPods dependencies
+        run: pod install
       - name: Build app (unsigned)
         run: |
           xcodebuild build -skipPackagePluginValidation -workspace Clendar.xcworkspace -scheme Clendar -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
